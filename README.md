@@ -1,34 +1,29 @@
-# Learning to Paint
+# ICCV2019-Learning to Paint
 
-## [Arxiv](https://arxiv.org/abs/1903.04411) | [YouTube](https://youtu.be/YmOgKZ5oipk) | [Reddit](https://www.reddit.com/r/reinforcementlearning/comments/b5lpfl/learning_to_paint_with_modelbased_deep/)
+## [arXiv](https://arxiv.org/abs/1903.04411) | [YouTube](https://youtu.be/YmOgKZ5oipk) | [Reddit](https://www.reddit.com/r/reinforcementlearning/comments/b5lpfl/learning_to_paint_with_modelbased_deep/)
 
 ## Abstract
 
-We show how to teach machines to paint like human painters, who can use a few strokes to create fantastic paintings. By combining the neural renderer and model-based Deep Reinforcement Learning (DRL), our agent can decompose texture-rich images into strokes and make long-term plans. For each stroke, the agent directly determines the position and color of the stroke. Excellent visual effect can be achieved using hundreds of strokes. The training process does not require experience of human painting or stroke tracking data. 
+We show how to teach machines to paint like human painters, who can use a
+small number of strokes to create fantastic paintings. By employing a neural
+renderer in model-based Deep Reinforcement Learning (DRL), our agents learn to
+determine the position and color of each stroke and make long-term plans to
+decompose texture-rich images into strokes. Experiments demonstrate that
+excellent visual effects can be achieved using hundreds of strokes. The
+training process does not require the experience of human painters or stroke
+tracking data. 
 
 **You can easily use [colaboratory](https://colab.research.google.com/github/hzwer/LearningToPaint/blob/master/LearningToPaint.ipynb) to have a try.**
 
 ![Demo](./demo/lisa.gif)![Demo](./demo/sunrise.gif)![Demo](./demo/sunflower.gif)
 ![Demo](./demo/palacemuseum.gif)![Demo](./demo/deepdream_night.gif)![Demo](./demo/deepdream_bird.gif)
 
-![Architecture](./image/main.png)
-
-## Installation
-Use [anaconda](https://conda.io/miniconda.html) to manage environment
-
-```
-$ conda create -n py36 python=3.6
-$ source activate py36
-$ git clone https://github.com/hzwer/LearningToPaint.git
-$ cd LearningToPaint
-```
-
 ### Dependencies
-* [PyTorch](http://pytorch.org/) 0.4.1 
+* [PyTorch](http://pytorch.org/) 1.1.0 
 * [tensorboardX](https://github.com/lanpa/tensorboard-pytorch/tree/master/tensorboardX)
 * [opencv-python](https://pypi.org/project/opencv-python/) 3.4.0
 ```
-pip3 install torch==0.4.1
+pip3 install torch==1.1.0
 pip3 install tensorboardX
 pip3 install opencv-python
 ```
@@ -52,8 +47,9 @@ We also provide with some other neural renderers and agents, you can use them in
 
 [round.pkl](https://drive.google.com/open?id=1kI4yXQ7IrNTfjFs2VL7IBBL_JJwkW6rl) --- [actor_round.pkl](https://drive.google.com/open?id=1ewDErUhPeGsEcH8E5a2QAcUBECeaUTZe);
 
-[bezierwotrans.pkl](https://drive.google.com/open?id=1XUdti00mPRh1-1iU66Uqg4qyMKk4OL19)
+[bezierwotrans.pkl](https://drive.google.com/open?id=1XUdti00mPRh1-1iU66Uqg4qyMKk4OL19) --- [actor_notrans.pkl](https://drive.google.com/open?id=1VBtesw2rHmYu2AeJ22XvTCuzuqkY8hZh)
 
+We also provide 百度网盘 source. 链接: https://pan.baidu.com/s/1GELBQCeYojPOBZIwGOKNmA 提取码: aq8n 
 ## Training
 
 ### Datasets
@@ -71,42 +67,43 @@ $ tensorboard --logdir train_log --port=6006
 ### Paint Agent
 After the neural renderer looks good enough, we can begin training the agent.
 ```
-$ python3 baseline/train.py --max_step=200 --debug --batch_size=96
+$ cd baseline
+$ python3 train.py --max_step=40 --debug --batch_size=96
 (A step contains 5 strokes in default.)
 $ tensorboard --logdir train_log --port=6006
 ```
-## Results
-**Painting process in different datasets**
-
-<div>
-<img src="./image/step.png" width="600">
-</div>
-
-## FAQ
-**Why does your demo look better than the result in your paper?**
-
-In our demo, after painting the outline of each image, we divide it into small patches to paint parallelly to get a high resolution.
-
-**Your main difference from [primitive](https://github.com/fogleman/primitive)？**
-
-Our research is to explore how to make machines learn to use painting tools. Our implementation is a combination of reinforcement learning and computer vision. Please read our paper for more details.
 
 ## Resources
-- A Chinese introduction [Learning to Paint：一个绘画 AI](https://zhuanlan.zhihu.com/p/61761901)
-- A Chinese tutorial [[教程]三分钟学会画一个爱豆](https://zhuanlan.zhihu.com/p/63194822)
+- Chinese introductions
+
+[量子位报道](https://zhuanlan.zhihu.com/p/64097633)
+
+[Learning to Paint：一个绘画 AI](https://zhuanlan.zhihu.com/p/61761901)
+
+[旷视研究院推出基于深度强化学习的绘画智能体](https://zhuanlan.zhihu.com/p/80732065)
+
+* Our ICCV poster
+  <div>
+  <img src="./image/poster.png" width="800">
+  </div>
 
 ## Contributors
 - [hzwer](https://github.com/hzwer)
 - [ak9250](https://github.com/ak9250)
 
-Also many thanks to [ctmakro](https://github.com/ctmakro/rl-painter) for inspiring this work.
+Also many thanks to [ctmakro](https://github.com/ctmakro/rl-painter) for inspiring this work. He also explored using greedy algorithm to generate paintings - [opencv_playground](https://github.com/ctmakro/opencv_playground).
 
 If you find this repository useful for your research, please cite the following paper:
 ```
-@article{huang2019learning,
-  title={Learning to Paint with Model-based Deep Reinforcement Learning},
+@inproceedings{huang2019learning,
+  title={Learning to paint with model-based deep reinforcement learning},
   author={Huang, Zhewei and Heng, Wen and Zhou, Shuchang},
-  journal={arXiv preprint arXiv:1903.04411},
+  booktitle={Proceedings of the IEEE International Conference on Computer Vision (ICCV)},
   year={2019}
 }
 ```
+
+感谢支持 Paypal Sponsor: https://www.paypal.com/paypalme/hzwer
+
+<img width="160" alt="image" src="https://cdn.luogu.com.cn/upload/image_hosting/5h3609p1.png"><img width="160" alt="image" src="https://cdn.luogu.com.cn/upload/image_hosting/yi3kcwnw.png">
+

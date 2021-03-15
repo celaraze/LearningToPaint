@@ -50,8 +50,8 @@ class DDPG(object):
 
         self.actor = ResNet(9, 18, 65) # target, canvas, stepnum, coordconv 3 + 3 + 1 + 2
         self.actor_target = ResNet(9, 18, 65)
-        self.critic = ResNet_wobn(3 + 9, 18, 1) # add the last canvas for better prediction
-        self.critic_target = ResNet_wobn(3 + 9, 18, 1) 
+        self.critic = ResNet_wobn(9, 18, 1)
+        self.critic_target = ResNet_wobn(9, 18, 1) 
 
         self.actor_optim  = Adam(self.actor.parameters(), lr=1e-2)
         self.critic_optim  = Adam(self.critic.parameters(), lr=1e-2)
@@ -97,21 +97,21 @@ class DDPG(object):
         T = state[:, 6 : 7]
         gt = state[:, 3 : 6].float() / 255
         canvas0 = state[:, :3].float() / 255
-        canvas1 = decode(action, canvas0)
-        gan_reward = cal_reward(canvas1, gt) - cal_reward(canvas0, gt)
+        with torch.no_grad(): # model free
+            canvas1 = decode(action, canvas0)
+        gan_reward = cal_reward(canvas1, gt) - cal_reward(canvas0, gt) # (batchsize, 64)
         # L2_reward = ((canvas0 - gt) ** 2).mean(1).mean(1).mean(1) - ((canvas1 - gt) ** 2).mean(1).mean(1).mean(1)        
         coord_ = coord.expand(state.shape[0], 2, 128, 128)
-        merged_state = torch.cat([canvas0, canvas1, gt, (T + 1).float() / self.max_step, coord_], 1)
-        # canvas0 is not necessarily added
+        merged_state = torch.cat([canvas0, gt, (T + 1).float() / self.max_step, coord_], 1)
         if target:
-            Q = self.critic_target(merged_state)
-            return (Q + gan_reward), gan_reward
+            Q = self.critic_target([merged_state, action])
+            return Q, gan_reward
         else:
-            Q = self.critic(merged_state)
+            Q = self.critic([merged_state, action])
             if self.log % 20 == 0:
                 self.writer.add_scalar('train/expect_reward', Q.mean(), self.log)
                 self.writer.add_scalar('train/gan_reward', gan_reward.mean(), self.log)
-            return (Q + gan_reward), gan_reward
+            return Q, gan_reward
     
     def update_policy(self, lr):
         self.log += 1
